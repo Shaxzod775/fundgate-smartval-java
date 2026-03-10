@@ -1,0 +1,61 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: smartval-valuation
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fundgate}
+    username: ${DB_USER:fundgate}
+    password: ${DB_PASS:fundgate_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+aws:
+  region: ${AWS_REGION:us-east-1}
+  bedrock:
+    model-id: ${BEDROCK_MODEL_ID:us.anthropic.claude-haiku-4-5-20251001-v1:0}
+    fallback-model-id: ${BEDROCK_FALLBACK_MODEL_ID:us.anthropic.claude-3-5-haiku-20241022-v1:0}
+    max-tokens: ${BEDROCK_MAX_TOKENS:4096}
+    temperature: ${BEDROCK_TEMPERATURE:0.7}
+
+valuation:
+  berkus:
+    max-idea: ${BERKUS_MAX_IDEA:100000}
+    max-prototype: ${BERKUS_MAX_PROTOTYPE:100000}
+    max-team: ${BERKUS_MAX_TEAM:100000}
+    max-strategic-relationships: ${BERKUS_MAX_GTM:100000}
+    max-product-rollout: ${BERKUS_MAX_MARKET_RISKS:100000}
+    total-max: ${BERKUS_TOTAL_MAX:500000}
+  scorecard:
+    base-valuation: ${SCORECARD_BASE_VALUATION:2000000}
+    min-multiplier: ${SCORECARD_MIN_MULTIPLIER:0.5}
+    max-multiplier: ${SCORECARD_MAX_MULTIPLIER:2.0}
+  riskfactor:
+    base-pre-money: ${RISKFACTOR_BASE_PRE_MONEY:2000000}
+    adjustment-step: ${RISKFACTOR_ADJUSTMENT_STEP:250000}
+    min-valuation: ${RISKFACTOR_MIN_VALUATION:500000}
+    max-valuation: ${RISKFACTOR_MAX_VALUATION:5000000}
+  pdf:
+    max-pages: ${PDF_MAX_PAGES:20}
+    image-dpi: ${PDF_IMAGE_DPI:150}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    uz.fundgate: INFO

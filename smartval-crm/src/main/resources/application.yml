@@ -1,0 +1,51 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: smartval-crm
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fundgate}
+    username: ${DB_USER:fundgate}
+    password: ${DB_PASS:fundgate_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+aws:
+  region: ${AWS_REGION:us-east-1}
+  bedrock:
+    model-id: ${BEDROCK_MODEL_ID:us.anthropic.claude-haiku-4-5-20251001-v1:0}
+    fallback-model-id: ${BEDROCK_FALLBACK_MODEL_ID:us.anthropic.claude-3-5-haiku-20241022-v1:0}
+    max-tokens: ${BEDROCK_MAX_TOKENS:4096}
+    temperature: ${BEDROCK_TEMPERATURE:0.7}
+
+crm:
+  api:
+    url: ${CRM_API_URL:https://api-kpsspj764a-uc.a.run.app}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    uz.fundgate: INFO

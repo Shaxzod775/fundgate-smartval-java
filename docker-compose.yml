@@ -1,0 +1,216 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: fundgate
+      POSTGRES_USER: fundgate
+      POSTGRES_PASSWORD: fundgate_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fundgate"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      CLUSTER_ID: 'fundgate-kafka-cluster-01'
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - gateway
+
+  gateway:
+    build:
+      context: .
+      dockerfile: smartval-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_HOST: redis
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  fundgate:
+    build:
+      context: .
+      dockerfile: smartval-fundgate/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: fundgate
+      DB_USER: fundgate
+      DB_PASS: fundgate_pass
+      REDIS_HOST: redis
+      AWS_REGION: us-east-1
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  valuation:
+    build:
+      context: .
+      dockerfile: smartval-valuation/Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: fundgate
+      DB_USER: fundgate
+      DB_PASS: fundgate_pass
+      AWS_REGION: us-east-1
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  submission:
+    build:
+      context: .
+      dockerfile: smartval-submission/Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: fundgate
+      DB_USER: fundgate
+      DB_PASS: fundgate_pass
+      RABBITMQ_HOST: rabbitmq
+      FUNDGATE_SERVICE_URL: http://fundgate:8081
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  email:
+    build:
+      context: .
+      dockerfile: smartval-email/Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      SMTP_HOST: smtp.gmail.com
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
+  chat:
+    build:
+      context: .
+      dockerfile: smartval-chat/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: fundgate
+      DB_USER: fundgate
+      DB_PASS: fundgate_pass
+      AWS_REGION: us-east-1
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  crm:
+    build:
+      context: .
+      dockerfile: smartval-crm/Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: fundgate
+      DB_USER: fundgate
+      DB_PASS: fundgate_pass
+      AWS_REGION: us-east-1
+      CRM_API_URL: https://api-kpsspj764a-uc.a.run.app
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  spam:
+    build:
+      context: .
+      dockerfile: smartval-spam/Dockerfile
+    ports:
+      - "8087:8087"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      AWS_REGION: us-east-1
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: smartval-scheduler/Dockerfile
+    ports:
+      - "8088:8088"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: fundgate
+      DB_USER: fundgate
+      DB_PASS: fundgate_pass
+      INTERNAL_API_KEY: fundgate-internal-secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  kafka_data:

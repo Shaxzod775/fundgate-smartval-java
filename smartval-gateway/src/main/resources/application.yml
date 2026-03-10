@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smartval-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+services:
+  fundgate:
+    url: ${FUNDGATE_SERVICE_URL:http://localhost:8081}
+  valuation:
+    url: ${VALUATION_SERVICE_URL:http://localhost:8082}
+  submission:
+    url: ${SUBMISSION_SERVICE_URL:http://localhost:8083}
+  email:
+    url: ${EMAIL_SERVICE_URL:http://localhost:8084}
+  chat:
+    url: ${CHAT_SERVICE_URL:http://localhost:8085}
+  crm:
+    url: ${CRM_SERVICE_URL:http://localhost:8086}
+  spam:
+    url: ${SPAM_SERVICE_URL:http://localhost:8087}
+
+fundgate:
+  internal-api-key: ${INTERNAL_API_KEY:fundgate-internal-secret}
+  rate-limit:
+    requests-per-minute: ${RATE_LIMIT_RPM:10}
+  jwt:
+    secret: ${JWT_SECRET_KEY:change-me-in-production-this-must-be-at-least-32-characters-long}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      service: smartval-gateway
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    uz.fundgate: INFO

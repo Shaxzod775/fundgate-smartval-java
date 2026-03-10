@@ -1,0 +1,47 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: smartval-scheduler
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fundgate}
+    username: ${DB_USER:fundgate}
+    password: ${DB_PASS:fundgate_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+platform:
+  api:
+    url: ${PLATFORM_API_URL:https://api-kpsspj764a-uc.a.run.app}
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:placeholder-bot-token}
+  chat:
+    id: ${TELEGRAM_CHAT_ID:-5230735509}
+  notifications:
+    enabled: ${TELEGRAM_NOTIFICATIONS_ENABLED:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,scheduledtasks
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    uz.fundgate: INFO

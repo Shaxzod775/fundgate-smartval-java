@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fundgate-config
+  namespace: fundgate
+  labels:
+    app.kubernetes.io/part-of: fundgate-smartval
+data:
+  # Database
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "fundgate"
+
+  # Redis
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+
+  # RabbitMQ
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+
+  # Kafka
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+
+  # Service URLs (internal K8s DNS)
+  GATEWAY_SERVICE_URL: "http://gateway:8080"
+  FUNDGATE_SERVICE_URL: "http://fundgate:8081"
+  VALUATION_SERVICE_URL: "http://valuation:8082"
+  SUBMISSION_SERVICE_URL: "http://submission:8083"
+  EMAIL_SERVICE_URL: "http://email:8084"
+  CHAT_SERVICE_URL: "http://chat:8085"
+  CRM_SERVICE_URL: "http://crm:8086"
+  SPAM_SERVICE_URL: "http://spam:8087"
+  SCHEDULER_SERVICE_URL: "http://scheduler:8088"
+
+  # External
+  CRM_API_URL: "https://api-kpsspj764a-uc.a.run.app"
+  SMTP_HOST: "smtp.gmail.com"
+  AWS_REGION: "us-east-1"
+
+  # Spring profiles
+  SPRING_PROFILES_ACTIVE: "k8s"

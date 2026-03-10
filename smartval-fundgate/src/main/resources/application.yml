@@ -1,0 +1,54 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: smartval-fundgate
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fundgate}
+    username: ${DB_USER:fundgate}
+    password: ${DB_PASS:fundgate_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+aws:
+  region: ${AWS_REGION:us-east-1}
+  bedrock:
+    model-id: ${BEDROCK_MODEL_ID:us.anthropic.claude-3-5-haiku-20241022-v1:0}
+    max-tokens: ${BEDROCK_MAX_TOKENS:8192}
+
+fundgate:
+  internal-api-key: ${INTERNAL_API_KEY:fundgate-internal-secret}
+  firebase:
+    credentials-path: ${FIREBASE_CREDENTIALS_PATH:}
+  thresholds:
+    ready-to-route: ${THRESHOLD_READY:75}
+    needs-improvement: ${THRESHOLD_IMPROVE:50}
+  pdf:
+    max-pages: ${PDF_MAX_PAGES:20}
+    image-dpi: ${PDF_IMAGE_DPI:150}
+    image-quality: ${PDF_IMAGE_QUALITY:85}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    uz.fundgate: INFO

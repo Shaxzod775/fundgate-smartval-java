@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spam
+  namespace: fundgate
+  labels:
+    app: spam
+    app.kubernetes.io/part-of: fundgate-smartval
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8087
+      targetPort: 8087
+      name: http
+  selector:
+    app: spam
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spam
+  namespace: fundgate
+  labels:
+    app: spam
+    app.kubernetes.io/part-of: fundgate-smartval
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spam
+  template:
+    metadata:
+      labels:
+        app: spam
+    spec:
+      containers:
+        - name: spam
+          image: fundgate/smartval-spam:latest
+          ports:
+            - containerPort: 8087
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: fundgate-config
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: fundgate-config
+                  key: RABBITMQ_PORT
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: fundgate-config
+                  key: AWS_REGION
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: fundgate-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fundgate-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fundgate-secrets
+                  key: INTERNAL_API_KEY
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: fundgate-config
+                  key: SPRING_PROFILES_ACTIVE
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8087
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8087
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FundGate Evaluation Results</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f3f4f6;">
+    <tr>
+        <td align="center" style="padding: 40px 20px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center;">
+                        <h1 style="margin: 0 0 8px 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">FundGate</h1>
+                        <p style="margin: 0; color: rgba(255,255,255,0.85); font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase;">Evaluation Results</p>
+                    </td>
+                </tr>
+
+                <!-- Greeting -->
+                <tr>
+                    <td style="padding: 32px 40px 0 40px;">
+                        <p style="margin: 0 0 8px 0; color: #111827; font-size: 18px; font-weight: 600;">Hello!</p>
+                        <p style="margin: 0; color: #4b5563; font-size: 15px; line-height: 1.6;">
+                            The evaluation of your startup
+                            <strong th:text="${startupName}" style="color: #667eea;">Startup</strong>
+                            has been completed.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Score Card -->
+                <tr>
+                    <td style="padding: 24px 40px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
+                            <tr>
+                                <td style="padding: 32px; text-align: center;">
+                                    <p style="margin: 0 0 8px 0; color: rgba(255,255,255,0.8); font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Total Score</p>
+                                    <p style="margin: 0; color: #ffffff; font-size: 52px; font-weight: 800;">
+                                        <span th:text="${score}">85</span><span style="font-size: 24px; font-weight: 400; opacity: 0.8;">/100</span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Verdict Badge -->
+                <tr>
+                    <td style="padding: 0 40px 24px 40px; text-align: center;">
+                        <span th:style="'display: inline-block; padding: 10px 24px; border-radius: 24px; font-size: 14px; font-weight: 600; color: #ffffff; background-color: ' + ${verdictColor} + ';'"
+                              th:text="${verdictLabel}">Ready for Routing</span>
+                    </td>
+                </tr>
+
+                <!-- Categories -->
+                <tr th:if="${categories != null and !categories.isEmpty()}">
+                    <td style="padding: 0 40px 24px 40px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
+                            <tr>
+                                <td style="padding: 20px 24px 12px 24px;">
+                                    <p style="margin: 0; color: #374151; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Category Scores</p>
+                                </td>
+                            </tr>
+                            <tr th:each="category : ${categories}">
+                                <td style="padding: 6px 24px;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+                                                <span style="color: #667eea; font-size: 14px; margin-right: 8px;">&#9679;</span>
+                                                <span th:text="${category}" style="color: #4b5563; font-size: 14px;">Category: 18/20</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0 0 12px 0;"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Blockers -->
+                <tr th:if="${blockers != null and !blockers.isEmpty()}">
+                    <td style="padding: 0 40px 24px 40px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
+                            <tr>
+                                <td style="padding: 20px 24px 12px 24px;">
+                                    <p style="margin: 0; color: #991b1b; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Blocking Issues</p>
+                                </td>
+                            </tr>
+                            <tr th:each="blocker : ${blockers}">
+                                <td style="padding: 6px 24px;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td style="padding: 6px 0;">
+                                                <span style="color: #dc3545; font-size: 14px; margin-right: 8px;">&#9888;</span>
+                                                <span th:text="${blocker}" style="color: #7f1d1d; font-size: 14px;">Blocker description</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0 0 12px 0;"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Summary -->
+                <tr th:if="${summary != null and !summary.isEmpty()}">
+                    <td style="padding: 0 40px 24px 40px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
+                            <tr>
+                                <td style="padding: 20px 24px;">
+                                    <p style="margin: 0 0 8px 0; color: #374151; font-size: 14px; font-weight: 600;">AI Summary</p>
+                                    <p th:text="${summary}" style="margin: 0; color: #6b7280; font-size: 14px; line-height: 1.6;">Summary of the analysis...</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- CTA Button -->
+                <tr th:if="${analysisUrl != null}">
+                    <td style="padding: 8px 40px 32px 40px; text-align: center;">
+                        <a th:href="${analysisUrl}"
+                           style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600;">
+                            View Full Results
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="padding: 24px 40px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center;">
+                        <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 13px;">Best regards, FundGate Team</p>
+                        <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                            &copy; <span th:text="${year}">2026</span> FundGate. All rights reserved.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
